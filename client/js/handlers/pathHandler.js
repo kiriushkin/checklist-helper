@@ -10,9 +10,10 @@ label.addEventListener('click', async (e) => {
   path = await window.api.selectFolder();
   console.log(path);
   pathText.innerHTML =
-    '...' + path.match(/\\[\w|\.|\s]+\\[\w|\.|\s]+\\[\w|\.|\s]+$/)[0];
+    '...' +
+    path.match(/(\\|\/)[\w|\.|\s]+(\\|\/)[\w|\.|\s]+(\\|\/)[\w|\.|\s]+$/)[0];
   document.title =
-    'Чек-лист - ' + path.match(/\\[\w|\.|\s]+$/)[0].replace('\\', '');
+    'Чек-лист - ' + path.match(/(\\|\/)[\w|\.|\s]+$/)[0].replace(/[\\|/]/, '');
 
   socket.emit('watching', path);
 });

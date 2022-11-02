@@ -124,12 +124,13 @@ const indexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -151,12 +152,13 @@ const indexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -178,12 +180,13 @@ const indexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -205,12 +208,13 @@ const indexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -288,12 +292,13 @@ const indexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -315,12 +320,13 @@ const indexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -352,12 +358,13 @@ const sundukIndexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -379,12 +386,13 @@ const sundukIndexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -406,12 +414,13 @@ const sundukIndexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -433,12 +442,13 @@ const sundukIndexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -516,12 +526,13 @@ const sundukIndexHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -553,12 +564,13 @@ const cssHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -580,12 +592,13 @@ const cssHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 
@@ -606,12 +619,13 @@ const cssHandler = (rules, parent) => {
 
         if (rule[1].length !== 0) {
           const spoiler = parent.appendChild(checkListSpoiler.cloneNode(true));
-          spoiler.dataset.name = rule[0] + rule[1][0].file.replace('\\', '');
+          spoiler.dataset.name =
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
 
           const dropdown = checkListDropdown.cloneNode(true);
           dropdown.innerText = rule[1].length;
           dropdown.dataset.spoiler =
-            rule[0] + rule[1][0].file.replace('\\', '');
+            rule[0] + rule[1][0].file.replace(/[\\|\/]/, '');
           dropdown.onclick = dropdownHandler;
           item.appendChild(dropdown);
 

@@ -72,7 +72,7 @@ async function innerCheck(path, stats, socket) {
 }
 
 async function indexPhpCheck(path, stats) {
-  if (!path.replace(global.folder, '').match(/^\\index.php/)) return;
+  if (!path.replace(global.folder, '').match(/^(\\|\/)index.php/)) return;
 
   const stream = fs.createReadStream(path);
   const rl = readline.createInterface({ input: stream });
@@ -89,7 +89,7 @@ async function indexPhpCheck(path, stats) {
       if (result)
         if (result.content)
           rules.index[result.key].push({
-            file: path.replace(global.folder + '\\', ''),
+            file: path.replace(global.folder, '').replace(/^(\\|\/)/, ''),
             content: result.content,
             line: lineNum,
           });
@@ -99,7 +99,8 @@ async function indexPhpCheck(path, stats) {
 }
 
 async function sundukIndexPhpCheck(path, stats) {
-  if (!path.replace(global.folder, '').match(/^\\SUNDUK\\index.php/)) return;
+  if (!path.replace(global.folder, '').match(/^(\\|\/)SUNDUK(\\|\/)index.php/))
+    return;
 
   const stream = fs.createReadStream(path);
   const rl = readline.createInterface({ input: stream });
@@ -116,7 +117,7 @@ async function sundukIndexPhpCheck(path, stats) {
       if (result)
         if (result.content)
           rules.sundukIndex[result.key].push({
-            file: path.replace(global.folder + '\\', ''),
+            file: path.replace(global.folder, '').replace(/^(\\|\/)/, ''),
             content: result.content,
             line: lineNum,
           });

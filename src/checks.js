@@ -3,35 +3,37 @@ const isExists = [
   async (path, stats) => {
     return {
       key: 'index',
-      status: !!path.replace(global.folder, '').match(/^\\index.php/),
+      status: !!path.replace(global.folder, '').match(/^(\\|\/)index.php/),
     };
   },
   // favicon
   async (path, stats) => {
     return {
       key: 'favicon',
-      status: !!path.replace(global.folder, '').match(/^\\favicon.ico/),
+      status: !!path.replace(global.folder, '').match(/^(\\|\/)favicon.ico/),
     };
   },
   // confirm
   async (path, stats) => {
     return {
       key: 'confirm',
-      status: !!path.replace(global.folder, '').match(/^\\confirm/),
+      status: !!path.replace(global.folder, '').match(/^(\\|\/)confirm/),
     };
   },
   // SUNDUK
   async (path, stats) => {
     return {
       key: 'sunduk',
-      status: !!path.replace(global.folder, '').match(/^\\SUNDUK/),
+      status: !!path.replace(global.folder, '').match(/^(\\|\/)SUNDUK/),
     };
   },
   // domonet.js
   async (path, stats) => {
     return {
       key: 'domonet',
-      status: !!path.replace(global.folder, '').match(/^\\js\\domonet.js/),
+      status: !!path
+        .replace(global.folder, '')
+        .match(/^(\\|\/)js(\\|\/)domonet.js/),
     };
   },
   // sunduk domonet
@@ -40,14 +42,14 @@ const isExists = [
       key: 'sundukDomonet',
       status: !!path
         .replace(global.folder, '')
-        .match(/^\\SUNDUK\\js\\domonet.js/),
+        .match(/^(\\|\/)SUNDUK(\\|\/)js(\\|\/)domonet.js/),
     };
   },
   // lib
   async (path, stats) => {
     return {
       key: 'lib',
-      status: !!path.replace(global.folder, '').match(/^\\lib/),
+      status: !!path.replace(global.folder, '').match(/^(\\|\/)lib/),
     };
   },
 ];
