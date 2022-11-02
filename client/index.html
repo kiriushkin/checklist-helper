@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src *"
+    />
+    <title>Чек-лист</title>
+    <link rel="icon" href="icons/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.min.css" />
+    <script src="js/third-party/socket.io.min.js"></script>
+  </head>
+  <body>
+    <form class="setup">
+      <div class="setup__block">
+        <span class="setup__path">Путь к папке</span>
+        <label for="path">...</label>
+        <input type="file" name="path" id="path" webkitdirectory directory />
+      </div>
+      <div class="setup__block">
+        <label for="type">Тип задачи</label>
+        <select name="type" id="type">
+          <option value="default">Стандарт</option>
+          <option value="preland">Преленд с кнопкой</option>
+          <option value="preland_crypto">Преленд крипта</option>
+        </select>
+      </div>
+    </form>
+
+    <div class="checklist">
+      <div class="checklist__group-name">Main</div>
+      <div class="checklist__group" id="overall"></div>
+      <div class="checklist__group-name">index.php</div>
+      <div class="checklist__group" id="index_php"></div>
+      <div class="checklist__group-name">SUNDUK\index.php</div>
+      <div class="checklist__group" id="sunduk_index_php"></div>
+      <div class="checklist__group-name">CSS</div>
+      <div class="checklist__group" id="css"></div>
+    </div>
+
+    <!-- You can also require other files to run in this process -->
+    <script src="js/renderer.js" type="module"></script>
+  </body>
+</html>
