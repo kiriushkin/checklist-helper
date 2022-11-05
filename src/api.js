@@ -2,16 +2,7 @@ const { Server } = require('socket.io');
 const fs = require('fs');
 const readline = require('readline');
 const chokidar = require('chokidar');
-
-const {
-  isExists,
-  indexPhpChecks,
-  sundukInputPhpChecks,
-  cssChecks,
-} = require('./checks.js');
-const rulesDefault = require('./rulesDefault.js');
-
-const rules = JSON.parse(JSON.stringify(rulesDefault));
+const { rules, result } = require('./config.js');
 
 const io = new Server(3500);
 
@@ -21,136 +12,257 @@ let handler = chokidar.watch('./');
 
 io.on('connection', (socket) => {
   console.log('Connected - ' + socket.id);
+  global.socket = socket;
 
   socket.on('watching', (path) => {
+    result.reset();
     handler.close();
     handler = chokidar.watch(path);
     global.folder = path;
+    console.log(`Watching ${path}`);
 
-    handler.on('add', async (path, stats) => {
-      for (const check of isExists) {
-        const result = await check(path, stats);
-
-        if (result.status) rules.overall[result.key] = result.status;
-      }
-
-      await innerCheck(path, stats, socket);
-    });
-
-    handler.on('unlink', async (path, stats) => {
-      for (const check of isExists) {
-        const result = await check(path, stats);
-
-        if (!result.status) rules.overall[result.key] = result.status;
-      }
-    });
-
-    handler.on('unlinkDir', async (path, stats) => {
-      for (const check of isExists) {
-        const result = await check(path, stats);
-
-        if (!result.status) rules.overall[result.key] = result.status;
-      }
-    });
-
-    handler.on('change', async (path, stats) => {
-      await innerCheck(path, stats, socket);
-    });
+    handler.on('add', onAdd);
+    handler.on('addDir', onAddDir);
+    handler.on('unlink', onUnlink);
+    handler.on('unlinkDir', onUnlinkDir);
+    handler.on('change', onChange);
   });
 });
 
-async function innerCheck(path, stats, socket) {
+async function onAdd(path, stats) {
+  Object.entries(rules).forEach(([key, checks]) => {
+    if (key !== 'common') return checkFile(path, key);
+
+    checks.fileExists.forEach((rule) => {
+      result.common[rule.key].message = `Наличие файла ${rule.fileName}`;
+      result.common[rule.key].status =
+        result.common[rule.key].status === 'check'
+          ? result.common[rule.key].status
+          : path.match(rule.query)
+          ? 'check'
+          : 'error';
+    });
+
+    checks.fileDoesntExist.forEach((rule) => {
+      result.common[rule.key].message = `Отсутствие файла ${rule.fileName}`;
+      result.common[rule.key].status =
+        result.common[rule.key].status === 'error'
+          ? result.common[rule.key].status
+          : path.match(rule.query)
+          ? 'error'
+          : 'check';
+      if (!result.common[rule.key].errors) result.common[rule.key].errors = [];
+      if (path.match(rule.query))
+        result.common[rule.key].errors.push(path.replace(global.folder, ''));
+    });
+  });
+
+  sendUpdate(global.socket);
+}
+
+async function onAddDir(path, stats) {
+  rules.common.folderExists.forEach((rule) => {
+    result.common[rule.key].message = `Наличие папки ${rule.name}`;
+    result.common[rule.key].status =
+      result.common[rule.key].status === 'check'
+        ? result.common[rule.key].status
+        : path.match(rule.query)
+        ? 'check'
+        : 'error';
+  });
+
+  rules.common.folderDoesntExist.forEach((rule) => {
+    result.common[rule.key].message = `Отсутствие папки ${rule.name}`;
+    result.common[rule.key].status =
+      result.common[rule.key].status === 'error'
+        ? result.common[rule.key].status
+        : path.match(rule.query)
+        ? 'error'
+        : 'check';
+    if (!result.common[rule.key].errors) result.common[rule.key].errors = [];
+    if (path.match(rule.query))
+      result.common[rule.key].errors.push(path.replace(global.folder, ''));
+  });
+}
+
+async function onUnlink(path, stats) {
+  rules.common.fileExists.forEach((rule) => {
+    result.common[rule.key].message = `Наличие файла ${rule.fileName}`;
+    result.common[rule.key].status =
+      result.common[rule.key].status === 'error'
+        ? result.common[rule.key].status
+        : path.match(rule.query)
+        ? 'error'
+        : 'check';
+  });
+
+  rules.common.fileDoesntExist.forEach((rule) => {
+    result.common[rule.key].message = `Отсутствие файла ${rule.fileName}`;
+    if (result.common[rule.key]?.errors.length < 2)
+      result.common[rule.key].status =
+        result.common[rule.key].status === 'check'
+          ? result.common[rule.key].status
+          : path.match(rule.query)
+          ? 'check'
+          : 'error';
+    if (!result.common[rule.key].errors) result.common[rule.key].errors = [];
+    if (path.match(rule.query)) {
+      result.common[rule.key].errors = result.common[rule.key].errors.filter(
+        (error) => error !== path.replace(global.folder, '')
+      );
+    }
+  });
+}
+
+async function onUnlinkDir(path, stats) {
+  rules.common.folderExists.forEach((rule) => {
+    result.common[rule.key].message = `Наличие папки ${rule.name}`;
+    result.common[rule.key].status =
+      result.common[rule.key].status === 'error'
+        ? result.common[rule.key].status
+        : path.match(rule.query)
+        ? 'error'
+        : 'check';
+  });
+
+  rules.common.folderDoesntExist.forEach((rule) => {
+    result.common[rule.key].message = `Отсутствие папки ${rule.name}`;
+    if (result.common[rule.key]?.errors.length < 2)
+      result.common[rule.key].status =
+        result.common[rule.key].status === 'check'
+          ? result.common[rule.key].status
+          : path.match(rule.query)
+          ? 'check'
+          : 'error';
+    if (!result.common[rule.key].errors) result.common[rule.key].errors = [];
+    if (path.match(rule.query)) {
+      result.common[rule.key].errors = result.common[rule.key].errors.filter(
+        (error) => error !== path.replace(global.folder, '')
+      );
+    }
+  });
+}
+
+async function onChange(path, stats) {
+  Object.entries(rules).forEach(([key, checks]) => {
+    if (key === 'common') return;
+
+    checkFile(path, key);
+  });
+}
+
+const checkFile = async (path, key) => {
+  if (!path.replace(global.folder, '').match(rules[key].query)) return;
+
+  const stream = fs.createReadStream(path);
+  const rl = readline.createInterface({ input: stream });
+
+  let lineNum = 0;
   const promises = [];
 
-  promises.push(indexPhpCheck(path, stats));
-  promises.push(sundukIndexPhpCheck(path, stats));
-  promises.push(cssCheck(path, stats));
+  for (const rule in result[key]) {
+    result[key][rule].errors = null;
+    result[key][rule].status = null;
+  }
+
+  rules[key].linesEquality.forEach((rule) => {
+    result[key][rule.key].firstValue = null;
+    result[key][rule.key].secondValue = null;
+  });
+
+  rules[key].lineCorrectness.forEach((rule) => {
+    result[key][rule.key].status = 'check';
+  });
+
+  for await (const line of rl) {
+    lineNum++;
+
+    promises.push(checkLineExists(line, key));
+    promises.push(checkLineDoesntExist(line, lineNum, key));
+    promises.push(checkLinesEquality(line, key));
+    promises.push(checkLineCorrectness(line, lineNum, key));
+  }
 
   await Promise.all(promises);
 
-  sendUpdate(socket);
-}
+  rules[key].linesEquality.forEach((rule) => {
+    const firstValue = rule.firstValue
+      ? rule.firstValue
+      : result[key][rule.key].firstValue;
+    const secondValue = rule.secondValue
+      ? rule.secondValue
+      : result[key][rule.key].secondValue;
 
-async function indexPhpCheck(path, stats) {
-  if (!path.replace(global.folder, '').match(/^(\\|\/)index.php/)) return;
+    result[key][rule.key].message = rule.name;
 
-  const stream = fs.createReadStream(path);
-  const rl = readline.createInterface({ input: stream });
+    if (firstValue !== secondValue)
+      return (result[key][rule.key].status = 'error');
 
-  rules.index = JSON.parse(JSON.stringify(rulesDefault.index));
+    result[key][rule.key].status = 'check';
+  });
+};
 
-  let lineNum = 0;
+const checkLineExists = async (line, key) => {
+  rules[key].lineExists.forEach((rule) => {
+    result[key][rule.key].message = `Наличие ${rule.name}`;
+    result[key][rule.key].status =
+      result[key][rule.key].status === 'check'
+        ? result[key][rule.key].status
+        : line.match(rule.query)
+        ? 'check'
+        : 'error';
+  });
+};
 
-  for await (const line of rl) {
-    lineNum++;
-    indexPhpChecks.forEach((check) => {
-      const result = check(line);
+const checkLineDoesntExist = async (line, lineNum, key) => {
+  rules[key].lineDoesntExist.forEach((rule) => {
+    result[key][rule.key].message = `Отсутствие ${rule.name}`;
+    result[key][rule.key].status =
+      result[key][rule.key].status === 'error'
+        ? result[key][rule.key].status
+        : line.match(rule.query)
+        ? 'error'
+        : 'check';
+    if (!result[key][rule.key].errors) result[key][rule.key].errors = [];
+    if (line.match(rule.query))
+      result[key][rule.key].errors.push({
+        content: line.trim(),
+        line: lineNum,
+        file: key,
+      });
+  });
+};
 
-      if (result)
-        if (result.content)
-          rules.index[result.key].push({
-            file: path.replace(global.folder, '').replace(/^(\\|\/)/, ''),
-            content: result.content,
-            line: lineNum,
-          });
-        else rules.index[result.key] = result.status;
-    });
-  }
-}
+const checkLinesEquality = async (line, key) => {
+  rules[key].linesEquality.forEach((rule) => {
+    if (rule.firstLine && line.match(rule.firstLine))
+      result[key][rule.key].firstValue = rule.firstExtractor(line);
 
-async function sundukIndexPhpCheck(path, stats) {
-  if (!path.replace(global.folder, '').match(/^(\\|\/)SUNDUK(\\|\/)index.php/))
-    return;
+    if (rule.secondLine && line.match(rule.secondLine))
+      result[key][rule.key].secondValue = rule.secondExtractor(line);
+  });
+};
 
-  const stream = fs.createReadStream(path);
-  const rl = readline.createInterface({ input: stream });
-
-  rules.sundukIndex = JSON.parse(JSON.stringify(rulesDefault.sundukIndex));
-
-  let lineNum = 0;
-
-  for await (const line of rl) {
-    lineNum++;
-    sundukInputPhpChecks.forEach((check) => {
-      const result = check(line);
-
-      if (result)
-        if (result.content)
-          rules.sundukIndex[result.key].push({
-            file: path.replace(global.folder, '').replace(/^(\\|\/)/, ''),
-            content: result.content,
-            line: lineNum,
-          });
-        else rules.sundukIndex[result.key] = result.status;
-    });
-  }
-}
-
-async function cssCheck(path, stats) {
-  if (!path.replace(global.folder, '').match(/.css$/)) return;
-
-  const stream = fs.createReadStream(path);
-  const rl = readline.createInterface({ input: stream });
-
-  rules.css = JSON.parse(JSON.stringify(rulesDefault.css));
-
-  let lineNum = 0;
-
-  for await (const line of rl) {
-    lineNum++;
-    cssChecks.forEach((check) => {
-      const result = check(line);
-
-      if (result)
-        rules.css[result.key].push({
-          file: path,
-          content: result.content,
-          line: lineNum,
-        });
-    });
-  }
-}
+const checkLineCorrectness = async (line, lineNum, key) => {
+  rules[key].lineCorrectness.forEach((rule) => {
+    result[key][rule.key].message = rule.name;
+    if (line.match(rule.lineQuery))
+      result[key][rule.key].status =
+        result[key][rule.key].status === 'error'
+          ? result[key][rule.key].status
+          : line.match(rule.targetQuery)
+          ? 'check'
+          : 'error';
+    if (!result[key][rule.key].errors) result[key][rule.key].errors = [];
+    if (line.match(rule.lineQuery) && !line.match(rule.targetQuery))
+      result[key][rule.key].errors.push({
+        content: line.trim(),
+        line: lineNum,
+        file: key,
+      });
+  });
+};
 
 async function sendUpdate(socket) {
-  socket.emit('update', rules);
+  socket.emit('update', result);
 }

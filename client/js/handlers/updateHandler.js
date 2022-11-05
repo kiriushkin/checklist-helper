@@ -1,4 +1,12 @@
 import dropdownHandler from './dropdownsHandler.js';
+import {
+  checkList,
+  checkListGroup,
+  checkListGroupName,
+  checkListItem,
+  checkListDropdown,
+  checkListSpoiler,
+} from '../components/checklist.components.js';
 
 const { socket } = window;
 
@@ -7,40 +15,60 @@ const index_php = document.querySelector('#index_php');
 const sunduk_index_php = document.querySelector('#sunduk_index_php');
 const css = document.querySelector('#css');
 
-const checkListItem = document.createElement('div');
-checkListItem.classList.add('checklist__item');
-
-const checkListStatus = document.createElement('div');
-checkListStatus.classList.add('checklist__item-status');
-checkListItem.appendChild(checkListStatus);
-
-const checkListText = document.createElement('div');
-checkListText.classList.add('checklist__item-text');
-checkListItem.appendChild(checkListText);
-
-const checkListDropdown = document.createElement('div');
-checkListDropdown.classList.add('checklist__item-dropdown');
-
-const checkListSpoiler = document.createElement('div');
-checkListSpoiler.classList.add('checklist__spoiler');
-checkListSpoiler.appendChild(document.createElement('ul'));
-
 const statuses = {
   check: '✔️',
   warrning: '⚠️',
   error: '❌',
 };
 
-socket.on('update', (rules) => {
-  overall.innerHTML = '';
-  index_php.innerHTML = '';
-  sunduk_index_php.innerHTML = '';
-  css.innerHTML = '';
+socket.on('update', (result) => {
+  checkList.innerHTML = '';
 
-  overallHanlder(rules.overall, overall);
-  indexHandler(rules.index, index_php);
-  sundukIndexHandler(rules.sundukIndex, sunduk_index_php);
-  cssHandler(rules.css, css);
+  Object.entries(result).forEach(([groupKey, rules]) => {
+    const groupName = checkListGroupName.cloneNode();
+    groupName.innerText = groupKey;
+
+    checkList.appendChild(groupName);
+
+    const group = checkListGroup.cloneNode();
+    group.id = groupKey;
+
+    checkList.appendChild(group);
+
+    Object.entries(rules).forEach(([key, rule]) => {
+      const item = checkListItem.cloneNode(true);
+      group.appendChild(item);
+
+      item.querySelector('.checklist__item-text').innerText = rule.message;
+      item.querySelector('.checklist__item-status').innerText =
+        statuses[rule.status];
+
+      if (!rule.errors || rule.errors.length === 0) return;
+
+      const spoiler = group.appendChild(checkListSpoiler.cloneNode(true));
+
+      const data = rule.errors[0].file
+        ? key + rule.errors[0].file.replace(/[\\|\/]/, '')
+        : key;
+      spoiler.dataset.name = data;
+
+      const dropdown = checkListDropdown.cloneNode(true);
+      dropdown.innerText = rule.errors.length;
+      dropdown.dataset.spoiler = data;
+      dropdown.onclick = dropdownHandler;
+      item.appendChild(dropdown);
+
+      rule.errors.forEach((error) => {
+        const li = document.createElement('li');
+        if (!error.content) li.innerText = error;
+        else {
+          li.innerText = `"${error.content}" `;
+          li.innerHTML += `<span class="file">${error.file}</span>:<span class="line">${error.line}</span>`;
+        }
+        spoiler.querySelector('ul').appendChild(li);
+      });
+    });
+  });
 });
 
 const overallHanlder = (rules, parent) => {
