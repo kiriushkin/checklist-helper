@@ -89,7 +89,7 @@ const rules = {
       {
         key: 'style',
         name: '<style>',
-        query: /<style>/,
+        query: /<style/,
       },
     ],
     linesEquality: [
@@ -97,17 +97,23 @@ const rules = {
         key: 'formId',
         name: 'Соответствие formId у формы и атрибута в скрипте',
         firstLine: /<form/,
-        firstExtractor: (line) =>
-          line
-            .match(/id=('|")\S+('|")/)[0]
-            .replace(/id=/, '')
-            .replace(/('|")/g, ''),
+        firstExtractor: (line) => {
+          if (line.match(/id=('|")\S+('|")/))
+            return line
+              .match(/id=('|")\S+('|")/)[0]
+              .replace(/id=/, '')
+              .replace(/('|")/g, '');
+          return null;
+        },
         secondLine: /buttonSend\(('|")#/,
-        secondExtractor: (line) =>
-          line
-            .match(/('|")\S+('|")/)[0]
-            .replace(/('|")/g, '')
-            .replace('#', ''),
+        secondExtractor: (line) => {
+          if (line.match(/('|")\S+('|")/))
+            return line
+              .match(/('|")\S+('|")/)[0]
+              .replace(/('|")/g, '')
+              .replace('#', '');
+          return null;
+        },
       },
       {
         key: 'geo',
@@ -160,7 +166,7 @@ const rules = {
       {
         key: 'style',
         name: '<style>',
-        query: /<style>/,
+        query: /<style/,
       },
     ],
     linesEquality: [
