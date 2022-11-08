@@ -260,6 +260,8 @@ const checkLineCorrectness = async (line, lineNum, key) => {
         line: lineNum,
         file: key,
       });
+
+    if (key === 'CSS') console.log(result[key][rule.key].errors);
   });
 };
 
