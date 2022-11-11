@@ -48,9 +48,11 @@ socket.on('update', (result) => {
       const spoiler = group.appendChild(checkListSpoiler.cloneNode(true));
 
       const data = rule.errors[0].file
-        ? key + rule.errors[0].file.replace(/[\\|\/]/, '')
+        ? key + rule.errors[0].file.replace(/[\\|\/]/g, '')
         : key;
       spoiler.dataset.name = data;
+
+      console.log(rule.errors[0].file, data);
 
       const dropdown = checkListDropdown.cloneNode(true);
       dropdown.innerText = rule.errors.length;

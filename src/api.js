@@ -152,7 +152,8 @@ async function onChange(path, stats) {
 }
 
 const checkFile = async (path, key) => {
-  if (!path.replace(global.folder, '').match(rules[key].query)) return;
+  const shortPath = path.replace(global.folder, '');
+  if (!shortPath.match(rules[key].query)) return;
 
   const stream = fs.createReadStream(path);
   const rl = readline.createInterface({ input: stream });
@@ -171,7 +172,11 @@ const checkFile = async (path, key) => {
   });
 
   rules[key].lineCorrectness.forEach((rule) => {
-    result[key][rule.key].status = 'check';
+    if (!rules[key].isGroup) return (result[key][rule.key].status = 'check');
+
+    result[shortPath] = {};
+    result[shortPath][rule.key] = {};
+    result[shortPath][rule.key].status = 'check';
   });
 
   for await (const line of rl) {
@@ -180,7 +185,7 @@ const checkFile = async (path, key) => {
     promises.push(checkLineExists(line, key));
     promises.push(checkLineDoesntExist(line, lineNum, key));
     promises.push(checkLinesEquality(line, key));
-    promises.push(checkLineCorrectness(line, lineNum, key));
+    promises.push(checkLineCorrectness(line, lineNum, key, shortPath));
   }
 
   await Promise.all(promises);
@@ -243,24 +248,48 @@ const checkLinesEquality = async (line, key) => {
   });
 };
 
-const checkLineCorrectness = async (line, lineNum, key) => {
-  rules[key].lineCorrectness.forEach((rule) => {
-    result[key][rule.key].message = rule.name;
-    if (line.match(rule.lineQuery))
-      result[key][rule.key].status =
-        result[key][rule.key].status === 'error'
-          ? result[key][rule.key].status
-          : line.match(rule.targetQuery)
-          ? 'check'
-          : 'error';
-    if (!result[key][rule.key].errors) result[key][rule.key].errors = [];
-    if (line.match(rule.lineQuery) && !line.match(rule.targetQuery))
-      result[key][rule.key].errors.push({
-        content: line.trim(),
-        line: lineNum,
-        file: key,
+const checkLineCorrectness = async (line, lineNum, key, path) => {
+  try {
+    if (rules[key].isGroup) {
+      rules[key].lineCorrectness.forEach((rule) => {
+        result[path][rule.key].message = rule.name;
+        if (line.match(rule.lineQuery))
+          result[path][rule.key].status =
+            result[path][rule.key].status === 'error'
+              ? result[path][rule.key].status
+              : line.match(rule.targetQuery)
+              ? 'check'
+              : 'error';
+        if (!result[path][rule.key].errors) result[path][rule.key].errors = [];
+        if (line.match(rule.lineQuery) && !line.match(rule.targetQuery))
+          result[path][rule.key].errors.push({
+            content: line.trim(),
+            line: lineNum,
+            file: path,
+          });
       });
-  });
+      return;
+    }
+    rules[key].lineCorrectness.forEach((rule) => {
+      result[key][rule.key].message = rule.name;
+      if (line.match(rule.lineQuery))
+        result[key][rule.key].status =
+          result[key][rule.key].status === 'error'
+            ? result[key][rule.key].status
+            : line.match(rule.targetQuery)
+            ? 'check'
+            : 'error';
+      if (!result[key][rule.key].errors) result[key][rule.key].errors = [];
+      if (line.match(rule.lineQuery) && !line.match(rule.targetQuery))
+        result[key][rule.key].errors.push({
+          content: line.trim(),
+          line: lineNum,
+          file: key,
+        });
+    });
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 async function sendUpdate(socket) {

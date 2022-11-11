@@ -204,6 +204,7 @@ const rules = {
     ],
   },
   ['CSS']: {
+    isGroup: true,
     query: /\.css$/,
     lineExists: [],
     lineDoesntExist: [],
@@ -223,6 +224,7 @@ const result = {
   common: {},
   reset: () => {
     Object.entries(rules).forEach(([key]) => {
+      if (rules[key].isGroup) return;
       result[key] = {};
       Object.values(rules[key]).forEach((checks) => {
         Object.values(checks).forEach((check) => {
