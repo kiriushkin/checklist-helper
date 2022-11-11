@@ -25,15 +25,15 @@ socket.on('update', (result) => {
   checkList.innerHTML = '';
 
   Object.entries(result).forEach(([groupKey, rules]) => {
-    const groupName = checkListGroupName.cloneNode();
-    groupName.innerText = groupKey;
-
-    checkList.appendChild(groupName);
-
     const group = checkListGroup.cloneNode();
     group.id = groupKey;
 
     checkList.appendChild(group);
+
+    const groupName = checkListGroupName.cloneNode();
+    groupName.innerText = groupKey;
+
+    group.appendChild(groupName);
 
     Object.entries(rules).forEach(([key, rule]) => {
       const item = checkListItem.cloneNode(true);
